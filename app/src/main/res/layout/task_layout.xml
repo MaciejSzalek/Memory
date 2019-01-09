@@ -9,7 +9,8 @@
         android:id="@+id/task_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/linear">
+        android:layout_above="@+id/linear"
+        android:choiceMode="multipleChoice">
     </ListView>
 
     <LinearLayout

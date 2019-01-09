@@ -1,5 +1,6 @@
 package com.memory.memory;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -74,12 +75,16 @@ public class TaskFragment extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    Tasks tasks = new Tasks();
-                    tasks.setId(1);
-                    dbHelper.deleteTaskById(tasks);
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                for(int i=0; i<taskListView.getCount(); i++){
+                    if(taskListView.isItemChecked(i)){
+                        Tasks tasks = new Tasks();
+                        tasks.setId(taskMap.get(taskListView.getItemAtPosition(i)));
+                        try {
+                            dbHelper.deleteTaskById(tasks);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 getAllTasksFromSQL();
             }
@@ -128,7 +133,7 @@ public class TaskFragment extends Fragment {
             e.printStackTrace();
         }
         if(getContext() != null){
-            arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,
+            arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_checked,
                     taskList);
             taskListView.setAdapter(arrayAdapter);
         }
