@@ -3,8 +3,8 @@ To-do and Shopping list  (app in progress)
 
 Iusses developed in project:
 
--Fragment with pager adapter
+- Fragment with pager adapter
 
--ORMLite
+- ORMLite
 
--Voice recognize (The issue will be developed in the future)
+- Voice recognize (The issue will be developed in the future)
