@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.UpdateBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -45,6 +46,28 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
             throw new RuntimeException(e);
         }
     }
+
+    public void updateCheckedById(Integer id, Integer checked) throws SQLException {
+        UpdateBuilder<Tasks, String> updateBuilder = tasksDao.updateBuilder();
+        updateBuilder.where().eq("id", id);
+        updateBuilder.updateColumnValue("checked", checked);
+        updateBuilder.update();
+    }
+
+    public int deleteTaskById(Tasks id) throws SQLException {
+        getTasksDao();
+        return tasksDao.delete(id);
+    }
+
+    public List<Tasks> getAllTasks() throws SQLException {
+        getTasksDao();
+        return tasksDao.queryForAll();
+    }
+
+    public Dao.CreateOrUpdateStatus createOrUpdateStatus(Tasks object) throws SQLException {
+        getTasksDao();
+        return tasksDao.createOrUpdate(object);
+    }
     public Dao<Tasks, String> getTasksDao() throws SQLException {
         if(tasksDao == null){
             tasksDao = getDao(Tasks.class);
@@ -55,19 +78,6 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
     public void close(){
         tasksDao = null;
         super.close();
-    }
-
-    public List<Tasks> getAllTasks() throws SQLException {
-        getTasksDao();
-        return tasksDao.queryForAll();
-    }
-    public Dao.CreateOrUpdateStatus createOrUpdateStatus(Tasks object) throws SQLException {
-        getTasksDao();
-        return tasksDao.createOrUpdate(object);
-    }
-    public int deleteTaskById(Tasks id) throws SQLException {
-        getTasksDao();
-        return tasksDao.delete(id);
     }
 
 }

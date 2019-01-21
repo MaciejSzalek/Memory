@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -24,26 +25,41 @@ public class SubjectFragment extends Fragment {
     private ListView subjectListView;
     public ArrayAdapter arrayAdapter;
 
+    public ImageButton addButton;
+    public ImageButton editButton;
+    public ImageButton deleteButton;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle saveInstanceState){
         View subjectFragment = inflater.inflate(R.layout.subject_layout, container, false);
 
         subjectListView = subjectFragment.findViewById(R.id.subject_list_view);
+        addButton = subjectFragment.findViewById(R.id.add_subject_button);
+        editButton = subjectFragment.findViewById(R.id.edit_subject_button);
+        deleteButton = subjectFragment.findViewById(R.id.delete_subject_button);
 
         getSubjectList();
 
         subjectListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getContext(), "Click: " + subjectList.get(position), Toast.LENGTH_SHORT).show();
+                if(subjectListView.isItemChecked(position)){
+                    subjectListView.setItemChecked(position, false);
+                }else{
+                    subjectListView.setItemChecked(position, true);
+                }
             }
         });
 
         subjectListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getContext(), "Long click: " + subjectList.get(position), Toast.LENGTH_SHORT).show();
+                if(subjectListView.isItemChecked(position)){
+                    subjectListView.setItemChecked(position, false);
+                }else{
+                    subjectListView.setItemChecked(position, true);
+                }
                 return false;
             }
         });
@@ -55,7 +71,7 @@ public class SubjectFragment extends Fragment {
             subjectList.add(i, "Subject: " + Integer.toString(i));
         }
         if(getContext() != null){
-            arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,
+            arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_checked,
                     subjectList);
             subjectListView.setAdapter(arrayAdapter);
         }

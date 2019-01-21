@@ -18,6 +18,9 @@ public class Tasks {
     @DatabaseField(columnName = "task")
     private String task;
 
+    @DatabaseField(columnName = "checked")
+    private Integer checked;
+
     public Integer getId() {
         return id;
     }
@@ -30,5 +33,12 @@ public class Tasks {
     }
     public void setTask(String task) {
         this.task = task;
+    }
+
+    public Integer getChecked() {
+        return checked;
+    }
+    public void setChecked(Integer checked) {
+        this.checked = checked;
     }
 }

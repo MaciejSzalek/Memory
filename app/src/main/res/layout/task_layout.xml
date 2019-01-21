@@ -21,29 +21,35 @@
         android:layout_alignParentBottom="true"
         android:background="@color/toolbar_color">
 
-        <Button
-            android:id="@+id/add_task_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            android:layout_gravity="center"
-            android:text="add"/>
-
-        <Button
-            android:id="@+id/edit_task_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            android:layout_gravity="center"
-            android:text="edit"/>
-
-        <Button
+        <ImageButton
             android:id="@+id/delete_task_button"
+            android:layout_margin="8sp"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="0.3"
             android:layout_gravity="center"
-            android:text="delete"/>
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/trash_bin_ic"/>
+
+        <ImageButton
+            android:id="@+id/edit_task_button"
+            android:layout_margin="8sp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:layout_gravity="center"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/confirm_ic"/>
+
+        <ImageButton
+            android:id="@+id/add_task_button"
+            android:layout_margin="8sp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:layout_gravity="center"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/plus_ic"/>
 
     </LinearLayout>
 </RelativeLayout>

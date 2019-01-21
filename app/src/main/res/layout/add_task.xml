@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20sp"
+    android:background="@color/toolbar_color">
+
+    <TextView
+        android:id="@+id/edit_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8sp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/toolbar_title"
+        android:textSize="30sp"
+        android:text="@string/new_todo"/>
+
+    <android.support.v7.widget.AppCompatMultiAutoCompleteTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edit_dialog_title"
+        android:layout_margin="8sp"/>
+
+    <ImageButton
+        android:id="@+id/confirm_position_button"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="8sp"
+        android:background="?android:attr/selectableItemBackground"
+        android:src="@drawable/confirm_ic" />
+
+    <ImageButton
+        android:id="@+id/delete_position_button"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="8sp"
+        android:background="?android:attr/selectableItemBackground"
+        android:src="@drawable/trash_bin_ic"/>
+
+</RelativeLayout>
