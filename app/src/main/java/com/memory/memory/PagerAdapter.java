@@ -27,7 +27,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch(position){
             case 0:
-                return new SubjectFragment();
+                return new ProductFragment();
             case 1:
                 return new TaskFragment();
         }

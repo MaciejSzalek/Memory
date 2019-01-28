@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/toolbar_color">
+
+    <TextView
+        android:id="@+id/new_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/toolbar_title"
+        android:textSize="30sp"
+        android:text="@string/new_todo"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="?attr/actionBarSize"
+        android:layout_below="@+id/new_dialog_title">
+
+        <android.support.v7.widget.AppCompatMultiAutoCompleteTextView
+            android:id="@+id/new_dialog_autoComplete_textView"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.75"
+            android:layout_margin="8sp"
+            android:textColor="@color/toolbar_title"
+            android:hint="@string/new_todo"/>
+
+        <ImageButton
+            android:id="@+id/confirm_position_button"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_margin="8sp"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/confirm_ic" />
+
+    </LinearLayout>
+
+</RelativeLayout>

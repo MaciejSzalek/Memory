@@ -23,7 +23,7 @@ import java.util.Map;
  * Created by Maciej Szalek on 2018-11-17.
  */
 
-public class TaskFragment extends Fragment {
+public class ProductFragment extends Fragment {
 
     private DBHelper dbHelper;
     public DialogManager dialogManager;
@@ -32,10 +32,10 @@ public class TaskFragment extends Fragment {
     public ImageButton editButton;
     public ImageButton deleteButton;
 
-    private List<String> taskList = new ArrayList<>();
-    private List<Integer> taskChecked = new ArrayList<>();
-    private Map<String, Integer> taskMap = new HashMap<>();
-    public ListView taskListView;
+    private List<String> productList = new ArrayList<>();
+    private List<Integer> productChecked = new ArrayList<>();
+    private Map<String, Integer> productMap = new HashMap<>();
+    private ListView productListView;
     public ArrayAdapter arrayAdapter;
 
     private String positionStr;
@@ -43,16 +43,16 @@ public class TaskFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle saveInstanceState){
+        View subjectFragment = inflater.inflate(R.layout.subject_layout, container, false);
 
-        View taskFragment = inflater.inflate(R.layout.task_layout, container, false);
-        taskListView = taskFragment.findViewById(R.id.task_list_view);
-        addButton = taskFragment.findViewById(R.id.add_task_button);
-        editButton = taskFragment.findViewById(R.id.edit_task_button);
-        deleteButton = taskFragment.findViewById(R.id.delete_task_button);
+        productListView = subjectFragment.findViewById(R.id.subject_list_view);
+        addButton = subjectFragment.findViewById(R.id.add_subject_button);
+        editButton = subjectFragment.findViewById(R.id.edit_subject_button);
+        deleteButton = subjectFragment.findViewById(R.id.delete_subject_button);
 
         dbHelper = new DBHelper(getContext());
 
-        getAllTasksFromSQL();
+        getAllProductFromSQL();
         setCheckStatus();
 
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +67,6 @@ public class TaskFragment extends Fragment {
             public void onClick(View v) {
             }
         });
-
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,44 +74,45 @@ public class TaskFragment extends Fragment {
             }
         });
 
-        taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Integer taskId = taskMap.get(taskList.get(position));
-                if(taskListView.isItemChecked(position)){
-                    updateTaskCheckedById(taskId, 1);
+                Integer productId = productMap.get(productList.get(position));
+                if(productListView.isItemChecked(position)){
+                    updateProductCheckedById(productId, 1);
                 }else{
-                    updateTaskCheckedById(taskId, 0);
+                    updateProductCheckedById(productId, 0);
                 }
             }
         });
 
-        taskListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        productListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Integer taskId = taskMap.get(taskList.get(position));
-                String posStr = taskList.get(position);
-                showEditDialog(taskId, posStr);
+                Integer productId = productMap.get(productList.get(position));
+                String posStr = productList.get(position);
+                showEditDialog(productId, posStr);
                 return false;
             }
         });
-        return taskFragment;
+        return subjectFragment;
     }
+
     private void showEditDialog(final Integer id, final String posStr){
-        String title = getResources().getString(R.string.edit_todo);
+        String title = getResources().getString(R.string.edit_subject);
         dialogManager = new DialogManager(getContext());
         DialogManager.Action action = new DialogManager.Action() {
             @Override
             public void setConfirmButton() {
-                updateTaskById(id, positionStr);
-                getAllTasksFromSQL();
+                updateProductById(id, positionStr);
+                getAllProductFromSQL();
                 setCheckStatus();
             }
 
             @Override
             public void setDeleteButton() {
-                deleteTaskById(posStr);
-                getAllTasksFromSQL();
+                deleteProductById(posStr);
+                getAllProductFromSQL();
                 setCheckStatus();
             }
 
@@ -125,7 +125,7 @@ public class TaskFragment extends Fragment {
     }
 
     private void showNewPositionDialog(){
-        String title = getResources().getString(R.string.new_todo);
+        String title = getResources().getString(R.string.new_product);
         dialogManager = new DialogManager(getContext());
         DialogManager.Action action = new DialogManager.Action() {
             @Override
@@ -133,7 +133,7 @@ public class TaskFragment extends Fragment {
                 if(positionStr != null){
                     addNewPosition(positionStr);
                 }
-                getAllTasksFromSQL();
+                getAllProductFromSQL();
                 setCheckStatus();
             }
             @Override
@@ -152,7 +152,7 @@ public class TaskFragment extends Fragment {
             @Override
             public void setConfirmButton() {
                 deleteAllMarked();
-                getAllTasksFromSQL();
+                getAllProductFromSQL();
             }
 
             @Override
@@ -164,86 +164,87 @@ public class TaskFragment extends Fragment {
     }
 
     private void addNewPosition(String str){
-        Tasks tasks = new Tasks();
-        tasks.setTask(str);
-        tasks.setChecked(0);
+        Product product = new Product();
+        product.setProduct(str);
+        product.setChecked(0);
         try {
-            dbHelper.createNewTasks(tasks);
+            dbHelper.createOrUpdateProduct(product);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    private void updateTaskById(Integer id, String posStr){
+    private void updateProductById(Integer id, String posStr){
         try {
-            dbHelper.updateTaskById(id, posStr);
+            dbHelper.updateProductById(id, posStr);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void updateTaskCheckedById(Integer id, Integer check){
+    private void updateProductCheckedById(Integer id, Integer check){
         try {
-            dbHelper.updateTaskCheckedById(id, check);
+            dbHelper.updateProductCheckedById(id, check);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
     private void deleteAllMarked(){
-        for(int i=0; i<taskListView.getCount(); i++){
-            if(taskListView.isItemChecked(i)){
-                String task = (String) taskListView.getItemAtPosition(i);
-                deleteTaskById(task);
+        for(int i=0; i<productListView.getCount(); i++){
+            if(productListView.isItemChecked(i)){
+                String task = (String) productListView.getItemAtPosition(i);
+                deleteProductById(task);
             }
         }
     }
 
-    private void deleteTaskById(String task){
+    private void deleteProductById(String product){
         try {
-            Tasks tasks = new Tasks();
-            tasks.setId(taskMap.get(task));
-            dbHelper.deleteTaskById(tasks);
+            Product prod = new Product();
+            prod.setId(productMap.get(product));
+            dbHelper.deleteProductById(prod);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     private void setCheckStatus(){
-        for(int i=0; i < taskChecked.size(); i++){
-            Integer checked = taskChecked.get(i);
+        for(int i=0; i < productChecked.size(); i++){
+            Integer checked = productChecked.get(i);
             if(checked == 0){
-                taskListView.setItemChecked(i, false);
+                productListView.setItemChecked(i, false);
             }else{
-                taskListView.setItemChecked(i, true);
+                productListView.setItemChecked(i, true);
             }
         }
     }
-    private void getAllTasksFromSQL(){
-        if(taskList.size() > 0){
-            taskList.clear();
-            taskChecked.clear();
-            taskMap.clear();
+
+    private void getAllProductFromSQL(){
+        if(productList.size() > 0){
+            productList.clear();
+            productChecked.clear();
+            productMap.clear();
         }
         try {
-            List<Tasks> tList = dbHelper.getAllTasks();
-            for(Tasks tasks: tList){
-                taskList.add(tasks.getTask());
-                taskChecked.add(tasks.getChecked());
-                taskMap.put(tasks.getTask(), tasks.getId());
+            List<Product> prodList = dbHelper.getAllProduct();
+            for(Product product: prodList){
+                productList.add(product.getProduct());
+                productChecked.add(product.getChecked());
+                productMap.put(product.getProduct(), product.getId());
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         if(getContext() != null){
-            Collections.sort(taskList);
+            Collections.sort(productList);
             arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_checked,
-                    taskList);
-            taskListView.setAdapter(arrayAdapter);
+                    productList);
+            productListView.setAdapter(arrayAdapter);
         }
     }
     @Override
     public void onResume(){
         super.onResume();
-        getAllTasksFromSQL();
+        getAllProductFromSQL();
         setCheckStatus();
     }
 }

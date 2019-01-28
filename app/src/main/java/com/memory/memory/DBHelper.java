@@ -21,6 +21,7 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
     private static final String DB_NAME = "memory.db";
     private static final int DB_VERSION = 1;
     private Dao<Tasks, String> tasksDao = null;
+    private Dao<Product, String> productDao = null;
 
     public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -30,7 +31,7 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try{
             TableUtils.createTable(connectionSource, Tasks.class);
-            TableUtils.createTable(connectionSource, Subject.class);
+            TableUtils.createTable(connectionSource, Product.class);
         }catch(SQLException e){
             throw new RuntimeException(e);
         }
@@ -39,45 +40,91 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         try{
-            TableUtils.dropTable(connectionSource, Subject.class, true);
+            TableUtils.dropTable(connectionSource, Product.class, true);
             TableUtils.dropTable(connectionSource, Tasks.class, true);
             onCreate(database, connectionSource);
         } catch (SQLException e){
             throw new RuntimeException(e);
         }
     }
+    public void updateTaskById(Integer id, String posStr) throws SQLException {
+        UpdateBuilder<Tasks, String> updateBuilder = tasksDao.updateBuilder();
+        updateBuilder.where().eq("id", id);
+        updateBuilder.updateColumnValue("task", posStr);
+        updateBuilder.update();
+    }
+    public void updateProductById(Integer id, String posStr) throws SQLException {
+        UpdateBuilder<Product, String> updateBuilder = productDao.updateBuilder();
+        updateBuilder.where().eq("id", id);
+        updateBuilder.updateColumnValue("product", posStr);
+        updateBuilder.update();
+    }
 
-    public void updateCheckedById(Integer id, Integer checked) throws SQLException {
+
+    public void updateTaskCheckedById(Integer id, Integer checked) throws SQLException {
         UpdateBuilder<Tasks, String> updateBuilder = tasksDao.updateBuilder();
         updateBuilder.where().eq("id", id);
         updateBuilder.updateColumnValue("checked", checked);
         updateBuilder.update();
     }
+    public void updateProductCheckedById(Integer id, Integer checked) throws SQLException {
+        UpdateBuilder<Product, String> updateBuilder = productDao.updateBuilder();
+        updateBuilder.where().eq("id", id);
+        updateBuilder.updateColumnValue("checked", checked);
+        updateBuilder.update();
+    }
+
 
     public int deleteTaskById(Tasks id) throws SQLException {
         getTasksDao();
         return tasksDao.delete(id);
     }
+    public int deleteProductById(Product id) throws SQLException {
+        getProductDao();
+        return productDao.delete(id);
+    }
+
 
     public List<Tasks> getAllTasks() throws SQLException {
         getTasksDao();
         return tasksDao.queryForAll();
+    }
+    public List<Product> getAllProduct() throws SQLException {
+        getProductDao();
+        return productDao.queryForAll();
+    }
+
+    public int createNewTasks(Tasks tasks) throws SQLException{
+        getTasksDao();
+        return tasksDao.create(tasks);
     }
 
     public Dao.CreateOrUpdateStatus createOrUpdateStatus(Tasks object) throws SQLException {
         getTasksDao();
         return tasksDao.createOrUpdate(object);
     }
+    public Dao.CreateOrUpdateStatus createOrUpdateProduct(Product object) throws SQLException {
+        getProductDao();
+        return productDao.createOrUpdate(object);
+    }
+
+
     public Dao<Tasks, String> getTasksDao() throws SQLException {
         if(tasksDao == null){
             tasksDao = getDao(Tasks.class);
         }
         return tasksDao;
     }
+    public Dao<Product, String> getProductDao() throws SQLException {
+        if(productDao == null){
+            productDao = getDao(Product.class);
+        }
+        return productDao;
+    }
     @Override
     public void close(){
         tasksDao = null;
+        productDao = null;
         super.close();
     }
-
 }

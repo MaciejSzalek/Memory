@@ -2,4 +2,12 @@
     <string name="app_name">Memory</string>
     <string name="Memory">memory</string>
     <string name="new_todo">New ToDo</string>
+    <string name="remove_all">Remove all selected</string>
+    <string name="remove_all_message">Do you really want remove all marked positions</string>
+    <string name="cancel_button_str">Cancel</string>
+    <string name="ok_button_str">OK</string>
+    <string name="field_not_empty">Field can not be empty</string>
+    <string name="edit_todo">Edit ToDo</string>
+    <string name="edit_subject">Edit Product</string>
+    <string name="new_product">New Product</string>
 </resources>
