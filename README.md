@@ -5,6 +5,8 @@ Iusses developed in project:
 
 - Fragment with pager adapter
 
-- ORMLite
+- ORMLite (C.R.U.D)
+
+- Custom Alert Dialog
 
 - Voice recognize (The issue will be developed in the future)
