@@ -1,5 +1,6 @@
 package com.memory.memory;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,30 +32,35 @@ public class ProductFragment extends Fragment {
 
     private DBHelper dbHelper;
     public DialogManager dialogManager;
+    private SpeechManager speechManager;
 
     public ImageButton addButton;
     public ImageButton editButton;
     public ImageButton deleteButton;
 
     private List<String> productList = new ArrayList<>();
-    private List<Integer> productChecked = new ArrayList<>();
     private Map<String, Integer> productMap = new HashMap<>();
+    private Map<String, Integer> productCheckedMap = new HashMap<>();
     private ListView productListView;
     public ArrayAdapter arrayAdapter;
 
     private String positionStr;
+    private static final int REQ_CODE_SPEECH_INPUT = 100;
+
+    //Toast.makeText(getContext(),"Speech product" ,Toast.LENGTH_SHORT).show();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle saveInstanceState){
-        View subjectFragment = inflater.inflate(R.layout.subject_layout, container, false);
 
-        productListView = subjectFragment.findViewById(R.id.subject_list_view);
-        addButton = subjectFragment.findViewById(R.id.add_subject_button);
-        editButton = subjectFragment.findViewById(R.id.edit_subject_button);
-        deleteButton = subjectFragment.findViewById(R.id.delete_subject_button);
+        View subjectFragment = inflater.inflate(R.layout.product_layout, container, false);
+        productListView = subjectFragment.findViewById(R.id.product_list_view);
+        addButton = subjectFragment.findViewById(R.id.add_product_button);
+        editButton = subjectFragment.findViewById(R.id.edit_product_button);
+        deleteButton = subjectFragment.findViewById(R.id.delete_product_button);
 
         dbHelper = new DBHelper(getContext());
+        speechManager = new SpeechManager(getContext(), getActivity());
 
         getAllProductFromSQL();
         setCheckStatus();
@@ -65,6 +75,9 @@ public class ProductFragment extends Fragment {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                speechManager = new SpeechManager(getContext(), getActivity());
+                speechManager.promptSpeechInput();
+                //sendStringToActivity();
             }
         });
         deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -91,20 +104,22 @@ public class ProductFragment extends Fragment {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Integer productId = productMap.get(productList.get(position));
                 String posStr = productList.get(position);
-                showEditDialog(productId, posStr);
+                showEditDialog(productId, position, posStr);
                 return false;
             }
         });
         return subjectFragment;
     }
 
-    private void showEditDialog(final Integer id, final String posStr){
+    private void showEditDialog(final Integer id,final int position, final String posStr){
         String title = getResources().getString(R.string.edit_subject);
         dialogManager = new DialogManager(getContext());
         DialogManager.Action action = new DialogManager.Action() {
             @Override
             public void setConfirmButton() {
                 updateProductById(id, positionStr);
+                updateProductCheckedById(id, 0);
+                productListView.setItemChecked(position, false);
                 getAllProductFromSQL();
                 setCheckStatus();
             }
@@ -154,7 +169,6 @@ public class ProductFragment extends Fragment {
                 deleteAllMarked();
                 getAllProductFromSQL();
             }
-
             @Override
             public void setDeleteButton() {}
             @Override
@@ -168,7 +182,7 @@ public class ProductFragment extends Fragment {
         product.setProduct(str);
         product.setChecked(0);
         try {
-            dbHelper.createOrUpdateProduct(product);
+            dbHelper.createProduct(product);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -208,8 +222,9 @@ public class ProductFragment extends Fragment {
     }
 
     private void setCheckStatus(){
-        for(int i=0; i < productChecked.size(); i++){
-            Integer checked = productChecked.get(i);
+        for(int i=0; i < productList.size(); i++){
+            String product = productList.get(i);
+            Integer checked = productCheckedMap.get(product);
             if(checked == 0){
                 productListView.setItemChecked(i, false);
             }else{
@@ -221,15 +236,15 @@ public class ProductFragment extends Fragment {
     private void getAllProductFromSQL(){
         if(productList.size() > 0){
             productList.clear();
-            productChecked.clear();
             productMap.clear();
+            productCheckedMap.clear();
         }
         try {
             List<Product> prodList = dbHelper.getAllProduct();
             for(Product product: prodList){
                 productList.add(product.getProduct());
-                productChecked.add(product.getChecked());
                 productMap.put(product.getProduct(), product.getId());
+                productCheckedMap.put(product.getProduct(), product.getChecked());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -241,9 +256,25 @@ public class ProductFragment extends Fragment {
             productListView.setAdapter(arrayAdapter);
         }
     }
+    public void sendStringToActivity(){
+        Events.EventProduct eventProduct = new Events.EventProduct("EventBus");
+        EventBus.getDefault().post(eventProduct);
+    }
     @Override
-    public void onResume(){
-        super.onResume();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(!EventBus.getDefault().isRegistered(this)){
+            EventBus.getDefault().register(this);
+        }
+    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        EventBus.getDefault().unregister(this);
+    }
+    @Subscribe
+    public void getMessageEvent(Events.EventProduct events){
+        addNewPosition(events.getProduct());
         getAllProductFromSQL();
         setCheckStatus();
     }

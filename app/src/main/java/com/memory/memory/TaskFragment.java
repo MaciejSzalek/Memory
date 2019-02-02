@@ -33,8 +33,8 @@ public class TaskFragment extends Fragment {
     public ImageButton deleteButton;
 
     private List<String> taskList = new ArrayList<>();
-    private List<Integer> taskChecked = new ArrayList<>();
     private Map<String, Integer> taskMap = new HashMap<>();
+    private Map<String, Integer> taskCheckedMap = new HashMap<>();
     public ListView taskListView;
     public ArrayAdapter arrayAdapter;
 
@@ -92,19 +92,21 @@ public class TaskFragment extends Fragment {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Integer taskId = taskMap.get(taskList.get(position));
                 String posStr = taskList.get(position);
-                showEditDialog(taskId, posStr);
+                showEditDialog(taskId, position, posStr);
                 return false;
             }
         });
         return taskFragment;
     }
-    private void showEditDialog(final Integer id, final String posStr){
+    private void showEditDialog(final Integer id,final int position, final String posStr){
         String title = getResources().getString(R.string.edit_todo);
         dialogManager = new DialogManager(getContext());
         DialogManager.Action action = new DialogManager.Action() {
             @Override
             public void setConfirmButton() {
                 updateTaskById(id, positionStr);
+                updateTaskCheckedById(id, 0);
+                taskListView.setItemChecked(position, false);
                 getAllTasksFromSQL();
                 setCheckStatus();
             }
@@ -208,8 +210,9 @@ public class TaskFragment extends Fragment {
     }
 
     private void setCheckStatus(){
-        for(int i=0; i < taskChecked.size(); i++){
-            Integer checked = taskChecked.get(i);
+        for(int i=0; i < taskList.size(); i++){
+            String task = taskList.get(i);
+            Integer checked = taskCheckedMap.get(task);
             if(checked == 0){
                 taskListView.setItemChecked(i, false);
             }else{
@@ -220,15 +223,15 @@ public class TaskFragment extends Fragment {
     private void getAllTasksFromSQL(){
         if(taskList.size() > 0){
             taskList.clear();
-            taskChecked.clear();
             taskMap.clear();
+            taskCheckedMap.clear();
         }
         try {
             List<Tasks> tList = dbHelper.getAllTasks();
             for(Tasks tasks: tList){
                 taskList.add(tasks.getTask());
-                taskChecked.add(tasks.getChecked());
                 taskMap.put(tasks.getTask(), tasks.getId());
+                taskCheckedMap.put(tasks.getTask(), tasks.getChecked());
             }
         } catch (SQLException e) {
             e.printStackTrace();

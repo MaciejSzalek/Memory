@@ -1,5 +1,6 @@
 package com.memory.memory;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -17,7 +18,7 @@ public class Product {
 
     public Product(){}
 
-    @DatabaseField(columnName = COLUMN_ID,generatedId = true)
+    @DatabaseField(columnName = COLUMN_ID, generatedId = true, allowGeneratedIdInsert = true)
     private Integer id;
 
     @DatabaseField(columnName = COLUMN_PRODUCT)

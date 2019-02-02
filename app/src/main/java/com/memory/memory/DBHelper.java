@@ -1,6 +1,7 @@
 package com.memory.memory;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -97,6 +98,11 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
     public int createNewTasks(Tasks tasks) throws SQLException{
         getTasksDao();
         return tasksDao.create(tasks);
+    }
+
+    public int createProduct(Product product) throws SQLException {
+        getProductDao();
+        return productDao.create(product);
     }
 
     public Dao.CreateOrUpdateStatus createOrUpdateStatus(Tasks object) throws SQLException {
