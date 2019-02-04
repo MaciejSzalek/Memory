@@ -3,7 +3,7 @@
 (app in progress)
 
 The application which support your MEMORY.
-Create your Shopping and ToDo list, using keyboard or voice.
+Create your Shopping and ToDo list using keyboard or voice.
 
 Iusses developed in project:
 
