@@ -1,5 +1,9 @@
-# Memory
-To-do and Shopping list  (app in progress)
+# Memory 
+
+(app in progress)
+
+The application which support your MEMORY.
+Create your Shopping and ToDo list, using keyboard or voice.
 
 Iusses developed in project:
 
@@ -7,6 +11,8 @@ Iusses developed in project:
 
 - ORMLite (C.R.U.D)
 
+- Example of use EventBus library
+
 - Custom Alert Dialog
 
-- Voice recognize (The issue will be developed in the future)
+- Voice recognizer (online)
