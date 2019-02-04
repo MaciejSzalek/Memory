@@ -11,8 +11,10 @@ Iusses developed in project:
 
 - ORMLite (C.R.U.D)
 
-- Example of use EventBus library
+- EventBus library
 
 - Custom Alert Dialog
+
+- Custom Toolbar
 
 - Voice recognizer (online)
