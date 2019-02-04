@@ -33,6 +33,7 @@ public class ProductFragment extends Fragment {
     private DBHelper dbHelper;
     public DialogManager dialogManager;
     private SpeechManager speechManager;
+    private EventBus bus = EventBus.getDefault();
 
     public ImageButton addButton;
     public ImageButton editButton;
@@ -45,9 +46,6 @@ public class ProductFragment extends Fragment {
     public ArrayAdapter arrayAdapter;
 
     private String positionStr;
-    private static final int REQ_CODE_SPEECH_INPUT = 100;
-
-    //Toast.makeText(getContext(),"Speech product" ,Toast.LENGTH_SHORT).show();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -60,8 +58,6 @@ public class ProductFragment extends Fragment {
         deleteButton = subjectFragment.findViewById(R.id.delete_product_button);
 
         dbHelper = new DBHelper(getContext());
-        speechManager = new SpeechManager(getContext(), getActivity());
-
         getAllProductFromSQL();
         setCheckStatus();
 
@@ -75,9 +71,9 @@ public class ProductFragment extends Fragment {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                speechManager = new SpeechManager(getContext(), getActivity());
+                speechManager = new SpeechManager(getActivity());
                 speechManager.promptSpeechInput();
-                //sendStringToActivity();
+
             }
         });
         deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -111,70 +107,31 @@ public class ProductFragment extends Fragment {
         return subjectFragment;
     }
 
-    private void showEditDialog(final Integer id,final int position, final String posStr){
-        String title = getResources().getString(R.string.edit_subject);
-        dialogManager = new DialogManager(getContext());
-        DialogManager.Action action = new DialogManager.Action() {
-            @Override
-            public void setConfirmButton() {
-                updateProductById(id, positionStr);
-                updateProductCheckedById(id, 0);
-                productListView.setItemChecked(position, false);
-                getAllProductFromSQL();
-                setCheckStatus();
-            }
-
-            @Override
-            public void setDeleteButton() {
-                deleteProductById(posStr);
-                getAllProductFromSQL();
-                setCheckStatus();
-            }
-
-            @Override
-            public void setPositionString(String positionString) {
-                positionStr = positionString;
-            }
-        };
-        dialogManager.editPositionDialogBuilder(title, posStr, action);
+    @Subscribe
+    public void getMessageEvent(Events.EventProduct events){
+        addNewPosition(events.getProduct());
+        getAllProductFromSQL();
+        setCheckStatus();
     }
 
-    private void showNewPositionDialog(){
-        String title = getResources().getString(R.string.new_product);
-        dialogManager = new DialogManager(getContext());
-        DialogManager.Action action = new DialogManager.Action() {
-            @Override
-            public void setConfirmButton() {
-                if(positionStr != null){
-                    addNewPosition(positionStr);
-                }
-                getAllProductFromSQL();
-                setCheckStatus();
-            }
-            @Override
-            public void setDeleteButton() {}
-            @Override
-            public void setPositionString(String positionString) {
-                positionStr = positionString;
-            }
-        };
-        dialogManager.addNewPositionDialogBuilder(title, action);
+    @Override
+    public void onResume(){
+        super.onResume();
+        getAllProductFromSQL();
+        setCheckStatus();
     }
 
-    private void showDeleteAllMarkedDialog(){
-        dialogManager = new DialogManager(getContext());
-        DialogManager.Action action = new DialogManager.Action() {
-            @Override
-            public void setConfirmButton() {
-                deleteAllMarked();
-                getAllProductFromSQL();
-            }
-            @Override
-            public void setDeleteButton() {}
-            @Override
-            public void setPositionString(String positionString) {}
-        };
-        dialogManager.deleteAllCheckedDialogBuilder(action);
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(!bus.isRegistered(this)){
+            bus.register(this);
+        }
+    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        bus.unregister(this);
     }
 
     private void addNewPosition(String str){
@@ -256,26 +213,70 @@ public class ProductFragment extends Fragment {
             productListView.setAdapter(arrayAdapter);
         }
     }
-    public void sendStringToActivity(){
-        Events.EventProduct eventProduct = new Events.EventProduct("EventBus");
-        EventBus.getDefault().post(eventProduct);
+
+    private void showEditDialog(final Integer id,final int position, final String posStr){
+        String title = getResources().getString(R.string.edit_subject);
+        dialogManager = new DialogManager(getContext());
+        DialogManager.Action action = new DialogManager.Action() {
+            @Override
+            public void setConfirmButton() {
+                updateProductById(id, positionStr);
+                updateProductCheckedById(id, 0);
+                productListView.setItemChecked(position, false);
+                getAllProductFromSQL();
+                setCheckStatus();
+            }
+
+            @Override
+            public void setDeleteButton() {
+                deleteProductById(posStr);
+                getAllProductFromSQL();
+                setCheckStatus();
+            }
+
+            @Override
+            public void setPositionString(String positionString) {
+                positionStr = positionString;
+            }
+        };
+        dialogManager.editPositionDialogBuilder(title, posStr, action);
     }
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if(!EventBus.getDefault().isRegistered(this)){
-            EventBus.getDefault().register(this);
-        }
+
+    private void showNewPositionDialog(){
+        String title = getResources().getString(R.string.new_product);
+        dialogManager = new DialogManager(getContext());
+        DialogManager.Action action = new DialogManager.Action() {
+            @Override
+            public void setConfirmButton() {
+                if(positionStr != null){
+                    addNewPosition(positionStr);
+                }
+                getAllProductFromSQL();
+                setCheckStatus();
+            }
+            @Override
+            public void setDeleteButton() {}
+            @Override
+            public void setPositionString(String positionString) {
+                positionStr = positionString;
+            }
+        };
+        dialogManager.addNewPositionDialogBuilder(title, action);
     }
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        EventBus.getDefault().unregister(this);
-    }
-    @Subscribe
-    public void getMessageEvent(Events.EventProduct events){
-        addNewPosition(events.getProduct());
-        getAllProductFromSQL();
-        setCheckStatus();
+
+    private void showDeleteAllMarkedDialog(){
+        dialogManager = new DialogManager(getContext());
+        DialogManager.Action action = new DialogManager.Action() {
+            @Override
+            public void setConfirmButton() {
+                deleteAllMarked();
+                getAllProductFromSQL();
+            }
+            @Override
+            public void setDeleteButton() {}
+            @Override
+            public void setPositionString(String positionString) {}
+        };
+        dialogManager.deleteAllCheckedDialogBuilder(action);
     }
 }

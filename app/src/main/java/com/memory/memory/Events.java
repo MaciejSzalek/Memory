@@ -26,4 +26,14 @@ public class Events {
             return toDo;
         }
     }
+
+    public static class EventVisibleHint{
+        private String hint;
+        public EventVisibleHint(String hint){
+            this.hint = hint;
+        }
+        public String getHint() {
+            return hint;
+        }
+    }
 }

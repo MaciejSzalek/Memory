@@ -29,7 +29,7 @@ public class SpeechActivity extends AppCompatActivity {
         startButton = findViewById(R.id.speech_start_button);
         lineButton = findViewById(R.id.speech_line_button);
 
-        speech = new SpeechManager(SpeechActivity.this, this);
+        speech = new SpeechManager(this);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override

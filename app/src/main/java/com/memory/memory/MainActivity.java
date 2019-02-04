@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private EventBus bus = EventBus.getDefault();
 
     private static final int REQ_CODE_SPEECH_INPUT = 100;
+    private int pageChildCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,16 +56,9 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mPager);
 
         bus.register(this);
-        //sendStringToFragment("Test EventBus");
+        pageChildCount = mPager.getChildCount();
+        setChildCount();
     }
-    public void sendStringToFragment(String str){
-        Events.EventProduct eventProduct = new Events.EventProduct(str);
-        bus.post(eventProduct);
-    }
-
-
-    @Subscribe
-    public void getProduct(Events.EventProduct events){}
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -74,11 +68,53 @@ public class MainActivity extends AppCompatActivity {
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 
-                    sendStringToFragment(result.get(0));
-
+                    if(pageChildCount == 0){
+                        sendStringProductFragment(result.get(0));
+                    }
+                    if(pageChildCount == 1){
+                        sendStringToDoFragment(result.get(0));
+                    }
                 }
                 break;
             }
         }
+    }
+
+    public void setChildCount(){
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                pageChildCount = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
+    public void sendStringProductFragment(String str){
+        Events.EventProduct eventProduct = new Events.EventProduct(str);
+        bus.post(eventProduct);
+    }
+
+    public void sendStringToDoFragment(String str){
+        Events.EventToDo eventToDo = new Events.EventToDo(str);
+        bus.post(eventToDo);
+    }
+
+    @Subscribe
+    public void getProduct(Events.EventProduct events){
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        bus.unregister(this);
     }
 }

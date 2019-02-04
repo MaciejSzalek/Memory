@@ -40,7 +40,7 @@
             android:layout_weight="0.3"
             android:layout_gravity="center"
             android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/confirm_ic"/>
+            android:src="@drawable/microphone"/>
 
         <ImageButton
             android:id="@+id/add_product_button"

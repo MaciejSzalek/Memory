@@ -1,5 +1,6 @@
 package com.memory.memory;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,6 +31,8 @@ public class TaskFragment extends Fragment {
 
     private DBHelper dbHelper;
     public DialogManager dialogManager;
+    private SpeechManager speechManager;
+    private EventBus bus = EventBus.getDefault();
 
     public ImageButton addButton;
     public ImageButton editButton;
@@ -51,7 +57,6 @@ public class TaskFragment extends Fragment {
         deleteButton = taskFragment.findViewById(R.id.delete_task_button);
 
         dbHelper = new DBHelper(getContext());
-
         getAllTasksFromSQL();
         setCheckStatus();
 
@@ -65,6 +70,8 @@ public class TaskFragment extends Fragment {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                speechManager = new SpeechManager(getActivity());
+                speechManager.promptSpeechInput();
             }
         });
 
@@ -98,71 +105,30 @@ public class TaskFragment extends Fragment {
         });
         return taskFragment;
     }
-    private void showEditDialog(final Integer id,final int position, final String posStr){
-        String title = getResources().getString(R.string.edit_todo);
-        dialogManager = new DialogManager(getContext());
-        DialogManager.Action action = new DialogManager.Action() {
-            @Override
-            public void setConfirmButton() {
-                updateTaskById(id, positionStr);
-                updateTaskCheckedById(id, 0);
-                taskListView.setItemChecked(position, false);
-                getAllTasksFromSQL();
-                setCheckStatus();
-            }
-
-            @Override
-            public void setDeleteButton() {
-                deleteTaskById(posStr);
-                getAllTasksFromSQL();
-                setCheckStatus();
-            }
-
-            @Override
-            public void setPositionString(String positionString) {
-                positionStr = positionString;
-            }
-        };
-        dialogManager.editPositionDialogBuilder(title, posStr, action);
+    @Subscribe
+    public void getMessageEvent(Events.EventToDo events){
+        addNewPosition(events.getToDo());
+        getAllTasksFromSQL();
+        setCheckStatus();
     }
 
-    private void showNewPositionDialog(){
-        String title = getResources().getString(R.string.new_todo);
-        dialogManager = new DialogManager(getContext());
-        DialogManager.Action action = new DialogManager.Action() {
-            @Override
-            public void setConfirmButton() {
-                if(positionStr != null){
-                    addNewPosition(positionStr);
-                }
-                getAllTasksFromSQL();
-                setCheckStatus();
-            }
-            @Override
-            public void setDeleteButton() {}
-            @Override
-            public void setPositionString(String positionString) {
-                positionStr = positionString;
-            }
-        };
-        dialogManager.addNewPositionDialogBuilder(title, action);
+    @Override
+    public void onResume(){
+        super.onResume();
+        getAllTasksFromSQL();
+        setCheckStatus();
     }
-
-    private void showDeleteAllMarkedDialog(){
-        dialogManager = new DialogManager(getContext());
-        DialogManager.Action action = new DialogManager.Action() {
-            @Override
-            public void setConfirmButton() {
-                deleteAllMarked();
-                getAllTasksFromSQL();
-            }
-
-            @Override
-            public void setDeleteButton() {}
-            @Override
-            public void setPositionString(String positionString) {}
-        };
-        dialogManager.deleteAllCheckedDialogBuilder(action);
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(!bus.isRegistered(this)){
+            bus.register(this);
+        }
+    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        bus.unregister(this);
     }
 
     private void addNewPosition(String str){
@@ -243,10 +209,71 @@ public class TaskFragment extends Fragment {
             taskListView.setAdapter(arrayAdapter);
         }
     }
-    @Override
-    public void onResume(){
-        super.onResume();
-        getAllTasksFromSQL();
-        setCheckStatus();
+
+    private void showEditDialog(final Integer id,final int position, final String posStr){
+        String title = getResources().getString(R.string.edit_todo);
+        dialogManager = new DialogManager(getContext());
+        DialogManager.Action action = new DialogManager.Action() {
+            @Override
+            public void setConfirmButton() {
+                updateTaskById(id, positionStr);
+                updateTaskCheckedById(id, 0);
+                taskListView.setItemChecked(position, false);
+                getAllTasksFromSQL();
+                setCheckStatus();
+            }
+
+            @Override
+            public void setDeleteButton() {
+                deleteTaskById(posStr);
+                getAllTasksFromSQL();
+                setCheckStatus();
+            }
+
+            @Override
+            public void setPositionString(String positionString) {
+                positionStr = positionString;
+            }
+        };
+        dialogManager.editPositionDialogBuilder(title, posStr, action);
+    }
+
+    private void showNewPositionDialog(){
+        String title = getResources().getString(R.string.new_todo);
+        dialogManager = new DialogManager(getContext());
+        DialogManager.Action action = new DialogManager.Action() {
+            @Override
+            public void setConfirmButton() {
+                if(positionStr != null){
+                    addNewPosition(positionStr);
+                }
+                getAllTasksFromSQL();
+                setCheckStatus();
+            }
+            @Override
+            public void setDeleteButton() {}
+            @Override
+            public void setPositionString(String positionString) {
+                positionStr = positionString;
+            }
+        };
+        dialogManager.addNewPositionDialogBuilder(title, action);
+    }
+
+    private void showDeleteAllMarkedDialog(){
+        dialogManager = new DialogManager(getContext());
+        DialogManager.Action action = new DialogManager.Action() {
+            @Override
+            public void setConfirmButton() {
+                deleteAllMarked();
+                getAllTasksFromSQL();
+            }
+
+            @Override
+            public void setDeleteButton() {}
+            @Override
+            public void setPositionString(String positionString) {}
+        };
+        dialogManager.deleteAllCheckedDialogBuilder(action);
     }
 }
