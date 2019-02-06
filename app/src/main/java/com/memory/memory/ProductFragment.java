@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -135,13 +134,17 @@ public class ProductFragment extends Fragment {
     }
 
     private void addNewPosition(String str){
-        Product product = new Product();
-        product.setProduct(str);
-        product.setChecked(0);
-        try {
-            dbHelper.createProduct(product);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if(contains(productList, str)){
+            Toast.makeText(getContext(), "Position exists", Toast.LENGTH_SHORT).show();
+        }else{
+            Product product = new Product();
+            product.setProduct(str);
+            product.setChecked(0);
+            try {
+                dbHelper.createProduct(product);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
     private void updateProductById(Integer id, String posStr){
@@ -212,6 +215,14 @@ public class ProductFragment extends Fragment {
                     productList);
             productListView.setAdapter(arrayAdapter);
         }
+    }
+
+    private boolean contains(List<String> list, final String str){
+        for(String s: list){
+            if(s.equalsIgnoreCase(str))
+                return true;
+        }
+        return false;
     }
 
     private void showEditDialog(final Integer id,final int position, final String posStr){

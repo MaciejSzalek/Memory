@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void getProduct(Events.EventProduct events){
+    public void getEvent(Events.EventProduct events){
     }
 
     @Override

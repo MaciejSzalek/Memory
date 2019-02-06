@@ -31,7 +31,7 @@ public class SpeechManager extends Activity{
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-                "Speak");
+                getString(R.string.Speak));
         activity.startActivity(intent);
         try{
             activity.startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
