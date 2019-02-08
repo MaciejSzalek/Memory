@@ -10,5 +10,11 @@
     <string name="edit_todo">Edit ToDo</string>
     <string name="edit_subject">Edit Product</string>
     <string name="new_product">New Product</string>
-    <string name="Speak">Speak...</string>
+    <string name="Speak">Speak</string>
+    <string name="menu">menu</string>
+    <string name="send_list">Send list</string>
+    <string name="delete_all">Delete all</string>
+    <string name="select_all">Select all</string>
+    <string name="unselect_all">Unselect all</string>
+    <string name="delete_selected">delete selected</string>
 </resources>

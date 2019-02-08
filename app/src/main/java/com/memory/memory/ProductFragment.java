@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -70,7 +72,7 @@ public class ProductFragment extends Fragment {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                speechManager = new SpeechManager(getActivity());
+                speechManager = new SpeechManager(getActivity(), getContext());
                 speechManager.promptSpeechInput();
 
             }
@@ -104,6 +106,16 @@ public class ProductFragment extends Fragment {
             }
         });
         return subjectFragment;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()) {
+            case R.id.send_list:
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Subscribe

@@ -70,7 +70,7 @@ public class TaskFragment extends Fragment {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                speechManager = new SpeechManager(getActivity());
+                speechManager = new SpeechManager(getActivity(), getContext());
                 speechManager.promptSpeechInput();
             }
         });

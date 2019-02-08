@@ -2,6 +2,7 @@ package com.memory.memory;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.speech.RecognizerIntent;
 
@@ -14,14 +15,17 @@ import java.util.ArrayList;
 public class SpeechManager extends Activity{
 
     private Activity activity;
+    private Context context;
 
     public interface Speech{
         void setSpeechStr(String speechStr);
     }
 
     Speech speech;
-    public SpeechManager(Activity activity){
+    public SpeechManager(Activity activity, Context context){
         this.activity = activity;
+        this.context = context;
+
     }
 
     private static final int REQ_CODE_SPEECH_INPUT = 100;
@@ -31,7 +35,7 @@ public class SpeechManager extends Activity{
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-                getString(R.string.Speak));
+                context.getResources().getString(R.string.Speak));
         activity.startActivity(intent);
         try{
             activity.startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
