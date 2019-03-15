@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -105,6 +108,42 @@ public class TaskFragment extends Fragment {
         });
         return taskFragment;
     }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()) {
+            case R.id.send_list:
+                Toast.makeText(getContext(), "Send ToDo list", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.select_all:
+                for(int i=0; i < taskList.size(); i++){
+                    Integer productId = taskMap.get(taskList.get(i));
+                    updateTaskCheckedById(productId, 1);
+                }
+                getAllTasksFromSQL();
+                setCheckStatus();
+                return true;
+            case R.id.unselect_all:
+                for(int i=0; i < taskList.size(); i++){
+                    Integer productId = taskMap.get(taskList.get(i));
+                    updateTaskCheckedById(productId, 0);
+                }
+                getAllTasksFromSQL();
+                setCheckStatus();
+                return true;
+            case R.id.delete_selected:
+                showDeleteAllMarkedDialog();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     @Subscribe
     public void getMessageEvent(Events.EventToDo events){
         addNewPosition(events.getToDo());

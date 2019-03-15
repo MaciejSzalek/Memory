@@ -13,8 +13,9 @@
     <string name="Speak">Speak</string>
     <string name="menu">menu</string>
     <string name="send_list">Send list</string>
-    <string name="delete_all">Delete all</string>
     <string name="select_all">Select all</string>
     <string name="unselect_all">Unselect all</string>
-    <string name="delete_selected">delete selected</string>
+    <string name="delete_selected">Delete selected</string>
+    <string name="new_position">New position</string>
+    <string name="position_exists">Position exists</string>
 </resources>

@@ -29,7 +29,7 @@
             android:layout_weight="0.75"
             android:layout_margin="8sp"
             android:textColor="@color/toolbar_title"
-            android:hint="@string/new_todo"/>
+            android:hint="@string/new_position"/>
 
         <ImageButton
             android:id="@+id/confirm_position_button"
