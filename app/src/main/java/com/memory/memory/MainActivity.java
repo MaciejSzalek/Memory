@@ -116,8 +116,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void getEvent(Events.EventProduct events){
-    }
+    public void getEvent(Events.EventProduct events){}
 
     @Override
     protected void onStop(){

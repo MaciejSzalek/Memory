@@ -1,13 +1,11 @@
 package com.memory.memory;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +51,6 @@ public class ProductFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle saveInstanceState){
-        setHasOptionsMenu(true);
 
         View subjectFragment = inflater.inflate(R.layout.product_layout, container, false);
         productListView = subjectFragment.findViewById(R.id.product_list_view);
@@ -110,38 +107,11 @@ public class ProductFragment extends Fragment {
         });
         return subjectFragment;
     }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()) {
             case R.id.send_list:
-                Intent intent = new Intent(getActivity(), SpeechActivity.class);
-                startActivity(intent);
-                //Toast.makeText(getContext(), "Send Product list", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.select_all:
-                for(int i=0; i < productList.size(); i++){
-                    Integer productId = productMap.get(productList.get(i));
-                    updateProductCheckedById(productId, 1);
-                }
-                getAllProductFromSQL();
-                setCheckStatus();
-                return true;
-            case R.id.unselect_all:
-                for(int i=0; i < productList.size(); i++){
-                    Integer productId = productMap.get(productList.get(i));
-                    updateProductCheckedById(productId, 0);
-                }
-                getAllProductFromSQL();
-                setCheckStatus();
-                return true;
-            case R.id.delete_selected:
-                showDeleteAllMarkedDialog();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -177,9 +147,7 @@ public class ProductFragment extends Fragment {
 
     private void addNewPosition(String str){
         if(contains(productList, str)){
-            Toast.makeText(getContext(),
-                    getContext().getResources().getString(R.string.position_exists),
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Position exists", Toast.LENGTH_SHORT).show();
         }else{
             Product product = new Product();
             product.setProduct(str);
