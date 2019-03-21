@@ -1,29 +1,42 @@
 package com.memory.memory;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telecom.TelecomManager;
 import android.telephony.PhoneNumberUtils;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SpeechActivity extends AppCompatActivity {
 
     TextView speechTextView;
     Button startButton;
     Button lineButton;
+    Context context;
 
     SpeechManager speech;
     List<Integer> list = new ArrayList<>();
 
     private static final int REQ_CODE_SPEECH_INPUT = 100;
+
+    private static final String URL_USER = "https://memory-1ac66.firebaseio.com" ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,23 +48,56 @@ public class SpeechActivity extends AppCompatActivity {
         lineButton = findViewById(R.id.speech_line_button);
 
         speech = new SpeechManager(this, this);
+        context = this;
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //speech.promptSpeechInput();
-                //showCont();
-                test();
+
             }
         });
         lineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //compereList();
-                showTest();
+                createNewUser2();
             }
         });
     }
+    private void getToken(){
+
+
+    }
+
+
+    public void createNewUser(){
+        FirebaseManager firebaseManager = new FirebaseManager(SpeechActivity.this, "ID", "12345");
+        firebaseManager.createNewUser();
+    }
+
+    public void createNewUser2(){
+        Retrofit retrofitUser = new Retrofit.Builder()
+                .baseUrl(URL_USER)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        Api apiUser = retrofitUser.create(Api.class);
+        Call<User> call = apiUser.setDataWithoutRandomness("TEST PATH", new User("ID", "12345"));
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
+
+
+
+    }
+
     private void showTest(){
         for(Integer integer: list){
             speechTextView.append("Number: " + Integer.toString(integer) + "\n");
